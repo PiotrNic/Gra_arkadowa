@@ -1,7 +1,6 @@
 import pygame
 import pygame_gui
 import json
-import cv2
 
 class UI:
     def __init__(self, manager, screen):
