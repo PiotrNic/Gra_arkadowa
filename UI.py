@@ -1,15 +1,14 @@
 import pygame
 import pygame_gui
 import json
+import cv2
 
 class UI:
     def __init__(self, manager, screen):
         self.elements = []
         self.background_name = "sprites/main_menu.png"
         self.loading_name = "sprites/loading.png"
-        self.background_name2 = "background.jpg"
-        self.new_game_name_pressed = "Button_new_game_pressed.png"
-        self.new_game_name = "Button_new_game.png"
+        self.death_screen_name = "sprites/death_screen.jpg"
         self.manager = manager
         self.screen = screen
         self.background = pygame.image.load(self.background_name).convert()
@@ -20,6 +19,7 @@ class UI:
         self.last_update = 0
         self.loading_bar = "/"
         self.loading_complete = 0
+        self.gamemode = "Normal"
     def clear_elements(self):
         for element in self.elements:
             element.kill()
@@ -44,6 +44,13 @@ class UI:
         self.elements.extend([loading_text])
         self.built()
         return self.loading_complete
+
+    def death_screen(self):
+        self.clear_elements()
+        self.background = pygame.image.load(self.death_screen_name).convert()
+
+        self.built()
+        return self.loading_complete
     def main_menu(self):
 
         self.clear_elements()
@@ -60,8 +67,8 @@ class UI:
 
     def options(self):
         self.clear_elements()
-        back = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((550, 450), (100, 50)), text='Back', manager=self.manager)
-        gamemode =  pygame_gui.elements.UIDropDownMenu(options_list=['Baby mode', 'Normal', 'Dark souls'],starting_option='Normal', relative_rect=pygame.Rect((550, 250), (100, 50)),manager=self.manager)
+        back = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((525, 450), (150, 50)), text='Back', manager=self.manager)
+        gamemode =  pygame_gui.elements.UIDropDownMenu(options_list=['Baby mode', 'Normal', 'Dark souls'],starting_option=self.gamemode, relative_rect=pygame.Rect((525, 250), (150, 50)),manager=self.manager)
         self.elements.extend([back, gamemode])
         self.option = gamemode
         self.built()

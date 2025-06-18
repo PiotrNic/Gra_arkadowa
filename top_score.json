@@ -1,31 +1,31 @@
 [
     {
         "Difficulty": 1,
-        "Survived": 4
+        "Survived": 9
+    },
+    {
+        "Difficulty": 1,
+        "Survived": 8
+    },
+    {
+        "Difficulty": 1,
+        "Survived": 7
+    },
+    {
+        "Difficulty": 1,
+        "Survived": 7
+    },
+    {
+        "Difficulty": 1,
+        "Survived": 6
+    },
+    {
+        "Difficulty": 1,
+        "Survived": 5
     },
     {
         "Difficulty": 1,
         "Survived": 3
-    },
-    {
-        "Difficulty": 1,
-        "Survived": 3
-    },
-    {
-        "Difficulty": 1,
-        "Survived": 1
-    },
-    {
-        "Difficulty": 1,
-        "Survived": 1
-    },
-    {
-        "Difficulty": 1,
-        "Survived": 1
-    },
-    {
-        "Difficulty": 1,
-        "Survived": 1
     },
     {
         "Difficulty": 1,

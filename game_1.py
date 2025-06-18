@@ -6,6 +6,7 @@ from enemy import *
 import json
 from operator import itemgetter
 
+
 pygame.init()
 back = "sprites/floor.png"  
 framee = "sprites/frame.png"
@@ -21,6 +22,7 @@ manager = pygame_gui.UIManager((1200, 700))
 Pause = True
 debug_mode = False
 show_stats = False
+death_screen = False
 gamemode = 1
 main_menu = True
 options = False
@@ -33,13 +35,16 @@ loading = False
 cam = None
 
 
-pygame.mixer.music.load("music/main_theme.wav")
+pygame.mixer.music.load("music/main_theme.mp3")
 pygame.mixer.music.play(-1, fade_ms=1000)
-pygame.mixer.music.set_volume(0.3)
+pygame.mixer.music.set_volume(0.1)
+
+pygame.mixer.set_num_channels(16)
 
 sound_button = pygame.mixer.Sound("music/button_pressed.wav")
-sound_button.set_volume(0.2)
-
+sound_button.set_volume(0.1)
+death_sound = pygame.mixer.Sound("music/death_sound.mp3")
+death_sound.set_volume(0.1)
 
 def load_sprite(sprit, width, height):
     upg_loaded_upg = {}
@@ -54,7 +59,7 @@ def load_sprite(sprit, width, height):
 sprites_upg = ["dmg", "fire_rate", "heavy_fire_rate","double_shot", "triple_shot", "quad_shot", "soy_milk"]
 loaded_upg = load_sprite(sprites_upg, 50, 50)
 def events():   
-    global debug_mode, show_stats,score,loading, score_initialized, loading_initialized, Pause, dt, run, game, main_menu,options, menu_initialized, options_initialized, mm, gamemode,about, about_initialized
+    global debug_mode, show_stats,score,loading,death_screen, death_screen_initialized, score_initialized, loading_initialized, Pause, dt, run, game, main_menu,options, menu_initialized, options_initialized, mm, gamemode,about, about_initialized
     eventss = pygame.event.get()
     for event in eventss:
         if game:    
@@ -71,6 +76,8 @@ def events():
                 if event.key == pygame.K_F1:
                     debug_mode = not debug_mode 
         if main_menu:
+            pygame.mixer.music.set_volume(0.1)
+            
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
 
                 sound_button.play()
@@ -113,6 +120,15 @@ def events():
                     menu_initialized = False
                     score_initialized = False 
             manager.process_events(event)
+        if death_screen:
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                death_sound.stop()
+                menu_initialized =False
+                main_menu = True
+                death_screen = False
+                death_screen_initialized = False
+                mm.background = pygame.image.load(mm.background_name)
         if about:
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
                 sound_button.play()
@@ -128,10 +144,12 @@ def events():
                 opt = mm.get_selected_option()
                 if opt[0] == "Baby mode":
                     gamemode = 0.5
+                    
                 if opt[0] == "Normal":
                     gamemode = 1
                 if opt[0] == "Dark souls":
                     gamemode = 1.5
+                mm.gamemode = opt[0]
             if event.type == pygame_gui.UI_BUTTON_PRESSED:
                 sound_button.play()
                 if event.ui_element.text == 'Back':
@@ -146,7 +164,7 @@ def events():
         Sprites.update(dt,Sprites, bullets, en, bullet_sprite, eventss)
         cam.update(Player, X, Y) 
 def play():
-    global starting_game,Player,cam, main_menu, game, menu_initialized, options_initialized, gamemode, framee
+    global starting_game,Player,cam, game,  gamemode, framee, death_screen
     
     if starting_game == 0:
         Player = player(X // 2, Y // 2, 'sprites/player1.png')
@@ -179,9 +197,7 @@ def play():
         
         
         Player = None
-        main_menu = True
-        menu_initialized = False
-        options_initialized = False
+        death_screen = True
         starting_game = 0
         game = False
   
@@ -199,7 +215,7 @@ def play():
         heavy_shoot_raterect = heavy_shoot_rate.get_rect()
         heavy_shoot_raterect.center = (126, 380)
         
-        text = font.render("HP: "+str(Player.hp)+"/"+str(Player.max_hp), True, "white", "brown")
+        text = font.render("HP: "+str(round(Player.hp))+"/"+str(Player.max_hp), True, "white", "brown")
         textRect = text.get_rect()
         textRect.center = (150, 20)
         
@@ -315,6 +331,7 @@ options_initialized = False
 score_initialized = False
 about_initialized = False
 loading_initialized = False
+death_screen_initialized = False
 
 while run:
 
@@ -341,6 +358,13 @@ while run:
         if not about_initialized:
             mm.about()
             about_initialized = True
+        mm.built()
+    elif death_screen:
+        if not death_screen_initialized: 
+            pygame.mixer.music.set_volume(0)
+            death_sound.play()
+            mm.death_screen()
+            death_screen_initialized = True
         mm.built()
     elif score:
         if not score_initialized:

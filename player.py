@@ -71,7 +71,7 @@ class player(pygame.sprite.Sprite):
         self.speed = 20
         self.shoot_rate_miltiplayer = 1
         self.shoot_rate = 0.5*self.shoot_rate_miltiplayer
-        self.heavy_shoot_rate = 2*self.shoot_rate_miltiplayer 
+        self.heavy_shoot_rate = 1.5*self.shoot_rate_miltiplayer 
         self.round = 0
         self.last_shot_time = 0
         self.last_heavy_shot_time = 0
@@ -86,7 +86,9 @@ class player(pygame.sprite.Sprite):
         self.facing_left = False
         self.original_sprite = self.sprite.copy() 
         self.gun_sound = pygame.mixer.Sound("music/gun'.wav")
-        self.gun_sound.set_volume(0.2)
+        self.gun_sound.set_volume(0.05)
+        self.gun_sound_interval = 1000
+        self.gun_sound_last = 0
         
     def shoot(self, mode, keys, bullets, bullet_sprite):
         for i in range(mode):
@@ -107,6 +109,8 @@ class player(pygame.sprite.Sprite):
                 bullets.add(bullet(self, "x-1", bullet_sprite,  40 + (i*10), 50))   
     def level_up(self):
         if self.exp >= self.max_exp:
+            if self.shoot_rate < 0:
+                self.shoot_rate = 0
             self.max_exp += 10*((self.level)**2)
             self.level += 1
             self.pending_upgrades = random_upgrade(self)
@@ -116,7 +120,7 @@ class player(pygame.sprite.Sprite):
             return self.pending_upgrades
     
     def update(self, dt:int, Sprites, bullets, en, bullet_sprite, events):
-        global game, main_menu,starting_game, menu_initialized
+        # global game, main_menu,starting_game, menu_initialized
         self.rect.topleft = (self.posx + self.offset, self.posy)
         if self.hp <= 0:
             self.kill()
@@ -195,9 +199,11 @@ class bullet(pygame.sprite.Sprite):
         self.posy = player.posy+self.offsety
         self.direction = direction
         self.sprite = sprite.copy()
-        player.gun_sound.play()
+        current_time = time.time()
+        if player.gun_sound_interval <= current_time - player.gun_sound_last:
+            player.gun_sound.play()
         self.hit_sound = pygame.mixer.Sound("music/enemy_hit.wav")
-        self.hit_sound.set_volume(0.3)
+        self.hit_sound.set_volume(0.2)
         if self.direction == "x+1":
             self.sprite = pygame.transform.rotate(self.sprite, 0)
             self.rect = pygame.Rect(self.posx, self.posy, 20, 10)
@@ -225,6 +231,8 @@ class bullet(pygame.sprite.Sprite):
             self.kill()
 
     def hit(self, enemy):
-        self.hit_sound.play()
+        channel = pygame.mixer.find_channel()
+        if channel:
+            channel.play(self.hit_sound)
         enemy.hp -= self.damage
         self.kill()
