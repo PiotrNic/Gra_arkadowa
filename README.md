@@ -1,20 +1,22 @@
--- THE GAME(serio nie mam pomysłu na nazwę) --
-Autor
+# -- THE GAME(serio nie mam pomysłu na nazwę) --
+## Autor
+
 -- Piotr Nicewicz --
 
-Opis
+## Opis
+
 -- Gra typu rouglite wzorowana na grach typu brotato i vampire survivors. --
 
--- Szczegóły --
+## -- Szczegóły --
 --  Zabijaj przeciwników, zdobywaj poziom i ulepszaj postać, przetrwaj jak najdłużej --
 
-Technologie
+## Technologie
 
-Python: 3.13.4
-Pygame: 2.6.1
-Pygame_gui: 0.6.14
+- **Python**: 3.13.4
+- **Pygame**: 2.6.1
+- **Pygame_gui**: 0.6.14
 
-Uruchomienie
+## Uruchomienie
 -- Instrukcja uruchomienia gry. --
 
 1. Sklonuj repozytorium:
