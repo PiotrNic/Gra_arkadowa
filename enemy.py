@@ -5,6 +5,17 @@ import math
 
 
 def get_spawn_position_around_player(player_posx, player_posy, min_dist, max_dist):
+    """
+
+    Args:
+        player_posx (_type_): _description_
+        player_posy (_type_): _description_
+        min_dist (_type_): _description_
+        max_dist (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     angle = random.uniform(0, 2 * math.pi)  
     distance = random.uniform(min_dist, max_dist)
     x = player_posx + distance * math.cos(angle)
@@ -12,6 +23,12 @@ def get_spawn_position_around_player(player_posx, player_posy, min_dist, max_dis
     return x, y
 
 def choice_upgrade(player, rando):
+    """Modifies player stats witch player choose
+
+    Args:
+        player (Player): Player class
+        rando (str): Upgrade chosen upgrade
+    """
     if rando == "soy_milk":
         player.dmg_miltiplayer *= 0.5       
         player.shoot_rate *= 0.3 
@@ -49,6 +66,16 @@ def choice_upgrade(player, rando):
     player.heavy_shoot_rate = round(player.heavy_shoot_rate, 2)
 
 def enemy_wave(Player, en, enemy_sprite_fast, enemy_sprite_strong, enemy_sprite_normal, gamemode):
+    """Spawns enemies if thers is less than Player.round*3 enemies
+
+    Args:
+        Player (Player): Player class
+        en (sprite.group): adds enemies to sprite group
+        enemy_sprite_fast (sprite): sprite of fast enemy
+        enemy_sprite_strong (sprite): sprite of strong enemy
+        enemy_sprite_normal (sprite): sprite of normal enemy
+        gamemode (int): base enemy stats modifier
+    """
     if len(en) < Player.round*3 and Player.round > 0:
         Player.round += 1
         for _ in range(Player.round*3):
@@ -67,7 +94,22 @@ def enemy_wave(Player, en, enemy_sprite_fast, enemy_sprite_strong, enemy_sprite_
       
 
 class enemy1(pygame.sprite.Sprite):
+    """Creates enemy
+
+    Args:
+        pygame (sprite): Gives enemy sprite properties 
+    """
     def __init__(self, start_posx, start_posy, sprite, mod_speed, mod_dmg, mod_exp):
+        """initialized enemy class
+
+        Args:
+            start_posx (int): start pos on X axis
+            start_posy (int): start pos on X axis
+            sprite (sprite): sprite of an enemy 
+            mod_speed (int): base stat modifier - speed
+            mod_dmg (int): base stat modifier - dmg
+            mod_exp (int): base stat modifier - exp popints
+        """
         super(enemy1, self).__init__()
         self.exp = 40*mod_exp
         self.posx = start_posx
@@ -84,6 +126,11 @@ class enemy1(pygame.sprite.Sprite):
         self.player_dead_sound = pygame.mixer.Sound("music/hit_death_sound.wav")
         self.player_dead_sound.set_volume(0.4)
     def update(self, player):
+        """updates enemy
+
+        Args:
+            player (Player): player class
+        """
         self.rect.topleft = (self.posx, self.posy)
         player.level_up()
         if self.hp <= 0:
@@ -103,6 +150,11 @@ class enemy1(pygame.sprite.Sprite):
 
     
     def hit_player(self, player):
+        """when hits player
+
+        Args:
+            player (Player): player class
+        """
         
         invincibility_frames = 2
         current_time = time.time()
@@ -116,6 +168,12 @@ class enemy1(pygame.sprite.Sprite):
                 self.hit_time = current_time
             
     def move_to_player(self, player, dt):
+        """moves enemy to player
+
+        Args:
+            player (Player): player class
+            dt (int): speed of movement of enemy
+        """
         dx = player.posx - self.posx
         
         if dx >= 0:
@@ -137,6 +195,11 @@ class enemy1(pygame.sprite.Sprite):
         self.posy += dy * self.speed * dt
                 
     def coll_in(self, other):
+        """if two enemies sprites collide with each other
+
+        Args:
+            other (enemy1): enemy class
+        """
         lenx = self.posx - other.posx
         leny = self.posy - other.posy
         if -5 < lenx < 5 and -5 < leny < 5:

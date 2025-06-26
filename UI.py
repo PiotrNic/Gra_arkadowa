@@ -3,7 +3,14 @@ import pygame_gui
 import json
 
 class UI:
+    """Creates UI"""
     def __init__(self, manager, screen):
+        """initialized UI class
+
+        Args:
+            manager (pygame_gui.UIManager): UI manager from pygame gui
+            screen (pygame.display): main screen in pygame
+        """
         self.elements = []
         self.background_name = "sprites/main_menu.png"
         self.loading_name = "sprites/loading.png"
@@ -20,11 +27,17 @@ class UI:
         self.loading_complete = 0
         self.gamemode = "Normal"
     def clear_elements(self):
+        """Clears elements on screen"""
         for element in self.elements:
             element.kill()
         self.elements.clear()
         
     def loading_screen(self):
+        """Loading screen
+
+        Returns:
+            int: loading progress
+        """
         self.clear_elements()
         current_time = pygame.time.get_ticks()
         self.background = pygame.image.load(self.loading_name).convert()
@@ -45,13 +58,14 @@ class UI:
         return self.loading_complete
 
     def death_screen(self):
+        """Screen when player dies"""
         self.clear_elements()
         self.background = pygame.image.load(self.death_screen_name).convert()
-
         self.built()
         return self.loading_complete
+        
     def main_menu(self):
-
+        """Main menu screen"""
         self.clear_elements()
         
         New_game = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((550, 300), (100, 50)), text='New game', manager=self.manager)
@@ -65,6 +79,7 @@ class UI:
         self.built()
 
     def options(self):
+        """options menu"""
         self.clear_elements()
         back = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((525, 450), (150, 50)), text='Back', manager=self.manager)
         gamemode =  pygame_gui.elements.UIDropDownMenu(options_list=['Baby mode', 'Normal', 'Dark souls'],starting_option=self.gamemode, relative_rect=pygame.Rect((525, 250), (150, 50)),manager=self.manager)
@@ -72,9 +87,15 @@ class UI:
         self.option = gamemode
         self.built()
     def get_selected_option(self):
+        """Refers to select difficulty menu
+
+        Returns:
+            str: selected option in options menu
+        """
         return self.option.selected_option if self.option else None
     
     def about(self):
+        """About menu"""
         self.clear_elements()
         
         back = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((550, 450), (100, 50)), text='Back', manager=self.manager)
@@ -98,6 +119,7 @@ class UI:
         self.built()
         
     def best_score(self):
+        """Best score menu"""
         try:
             with open("top_score.json", "r") as file:
                 table = json.load(file)
@@ -128,7 +150,7 @@ class UI:
         self.elements.extend([table_window, back])
         self.built()
     def built(self):
-        
+        """built pygamr elements"""
         self.manager.update(0.1)
         self.screen.blit(self.background, (0, 0))
         self.manager.draw_ui(self.screen)

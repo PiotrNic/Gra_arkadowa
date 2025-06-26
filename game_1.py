@@ -18,7 +18,7 @@ clock = pygame.time.Clock()
 dt = 0.1
 font = pygame.font.Font('freesansbold.ttf', 32)
 font_stats = pygame.font.Font('freesansbold.ttf', 20)
-manager = pygame_gui.UIManager((1200, 700))
+manager = pygame_gui.UIManager((X, Y))
 Pause = True
 debug_mode = False
 show_stats = False
@@ -58,7 +58,8 @@ def load_sprite(sprit, width, height):
 
 sprites_upg = ["dmg", "fire_rate", "heavy_fire_rate","double_shot", "triple_shot", "quad_shot", "soy_milk"]
 loaded_upg = load_sprite(sprites_upg, 50, 50)
-def events():   
+def events(): 
+    """checks every pygame event"""
     global debug_mode, show_stats,score,loading,death_screen, death_screen_initialized, score_initialized, loading_initialized, Pause, dt, run, game, main_menu,options, menu_initialized, options_initialized, mm, gamemode,about, about_initialized
     eventss = pygame.event.get()
     for event in eventss:
@@ -143,8 +144,7 @@ def events():
                 sound_button.play()
                 opt = mm.get_selected_option()
                 if opt[0] == "Baby mode":
-                    gamemode = 0.5
-                    
+                    gamemode = 0.5  
                 if opt[0] == "Normal":
                     gamemode = 1
                 if opt[0] == "Dark souls":
@@ -164,6 +164,7 @@ def events():
         Sprites.update(dt,Sprites, bullets, en, bullet_sprite, eventss)
         cam.update(Player, X, Y) 
 def play():
+    """main game initialized"""
     global starting_game,Player,cam, game,  gamemode, framee, death_screen
     
     if starting_game == 0:

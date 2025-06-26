@@ -2,10 +2,15 @@ import pygame
 import random
 import time
 
-
-
-        
 def random_upgrade(player):
+    """rolls random upgrades
+
+    Args:
+        player (player): player class
+
+    Returns:
+        list: 3 randomized upgrades
+    """
     upgrades = player.normal_upgrades
     special_upgrades = player.special_upgrades
     rand = random.randint(0,100)
@@ -30,27 +35,59 @@ def random_upgrade(player):
         if i == "soy_milk":
             player.special_upgrades.remove(i)
     return [rand_choice1, rand_choice2, rand_choice3]
-
-  
-    
-                    
+               
 class camera:
+    """Creates camera
+    """
     def __init__(self, width, height):
+        """initialized camera
+
+        Args:
+            width (int): X border camera
+            height (int): Y border camera
+        """
         self.camera = pygame.Rect(0,0, width, height)
         self.width = width
         self.height = height
         
     def apply(self, entity):
+        """applys movement to given entity
+
+        Args:
+            entity (object): entity to apply camera effect
+
+        Returns:
+            object.rect.move: move rect with camera pos
+        """
         return entity.rect.move(self.camera.topleft)
     
     def update(self, target, X:int, Y:int):
+        """updates camera
+
+        Args:
+            target (object): object with camera effect
+            X (int): X border camera
+            Y (int): Y border camera
+        """
         x = -target.rect.x + int(X/2)
         y = -target.rect.y + int(Y/2)
         self.camera = pygame.Rect(x, y, self.width, self.height)
         
 
 class player(pygame.sprite.Sprite):
+    """Creates player
+
+    Args:
+        pygame (sprite): Gives player sprite properties 
+    """
     def __init__(self, posx, posy, sprite):
+        """Initialize player class
+
+        Args:
+            posx (int): starting pos on X
+            posy (int): starting pos on y
+            sprite (sprite): Player sprite 
+        """
         super(player, self).__init__()
 
         self.posx = posx
@@ -91,6 +128,14 @@ class player(pygame.sprite.Sprite):
         self.gun_sound_last = 0
         
     def shoot(self, mode, keys, bullets, bullet_sprite):
+        """Gives player attribute to shoot
+
+        Args:
+            mode (int): Game difficulty
+            keys (event.keys): event keys
+            bullets (sprite.group): adds bullet to bullets sprite group
+            bullet_sprite (sprite): bullet sprite
+        """
         for i in range(mode):
             if keys[pygame.K_UP]:
                 bullets.add(bullet(self, "y-1", bullet_sprite, 40, 50 + (i*10)))
@@ -101,6 +146,14 @@ class player(pygame.sprite.Sprite):
             elif keys[pygame.K_RIGHT]:
                 bullets.add(bullet(self, "x+1", bullet_sprite, 40 + (i*10), 50))
     def heavy_shoot(self, mode, keys, bullets, bullet_sprite):
+        """Gives player attribute to shoot in all directions at once
+
+        Args:
+            mode (int): Game difficulty
+            keys (event.keys): event keys
+            bullets (sprite.group): adds bullet to bullets sprite group
+            bullet_sprite (sprite): bullet sprite
+        """
         for i in range(mode):
             if keys[pygame.K_UP] and keys[pygame.K_DOWN] and keys[pygame.K_LEFT] and keys[pygame.K_RIGHT]:
                 bullets.add(bullet(self, "x+1", bullet_sprite, 40 + (i*10), 50))
@@ -108,6 +161,11 @@ class player(pygame.sprite.Sprite):
                 bullets.add(bullet(self, "y+1", bullet_sprite, 40, 50 + (i*10)))
                 bullets.add(bullet(self, "x-1", bullet_sprite,  40 + (i*10), 50))   
     def level_up(self):
+        """Player level up
+
+        Returns:
+            list: list of upgrades to choose from
+        """
         if self.exp >= self.max_exp:
             if self.shoot_rate < 0:
                 self.shoot_rate = 0
@@ -120,7 +178,16 @@ class player(pygame.sprite.Sprite):
             return self.pending_upgrades
     
     def update(self, dt:int, Sprites, bullets, en, bullet_sprite, events):
-        # global game, main_menu,starting_game, menu_initialized
+        """update player
+
+        Args:
+            dt (int): speed of the game
+            Sprites (sprite): add sprites to all sprites group 
+            bullets (sprite.group): kills bullets from sprite group
+            en (sprite.group): kills enemy from sprite group
+            bullet_sprite (sprite): bullet sprite
+            events (pygame.events): events for key input
+        """
         self.rect.topleft = (self.posx + self.offset, self.posy)
         if self.hp <= 0:
             self.kill()
@@ -189,7 +256,21 @@ class player(pygame.sprite.Sprite):
                     self.last_heavy_shot_time = current_time     
                         
 class bullet(pygame.sprite.Sprite):
+    """Creates bullet
+
+    Args:
+        pygame (sprite): Gives bullet sprite properties 
+    """
     def __init__(self, player, direction, sprite, offsety, offsetx):
+        """initialized bullet class
+
+        Args:
+            player (player): player class
+            direction (str): in what direction bullet should go format 'axis+/-1'
+            sprite (sprite): bullet sprite
+            offsety (int): offset to bullet spawn point on Y
+            offsetx (int): offset to bullet spawn point on X
+        """
         super(bullet, self).__init__()
         self.damage = player.dmg
         self.speed = 10
@@ -218,6 +299,15 @@ class bullet(pygame.sprite.Sprite):
             self.rect = pygame.Rect(self.posx, self.posy, 10, 20)
 
     def update(self, player, dt:int, cam, X:int, Y:int):
+        """updates bullet class
+
+        Args:
+            player (player]): player class
+            dt (int): speed of the game
+            cam (camera): camera class
+            X (int): X border of screen
+            Y (int): Y border of screen
+        """
         dir = int(self.direction[1:])
         self.rect.topleft = (self.posx, self.posy)
         if self.direction[0] == "x":
@@ -231,6 +321,11 @@ class bullet(pygame.sprite.Sprite):
             self.kill()
 
     def hit(self, enemy):
+        """hit enemy
+
+        Args:
+            enemy (enemy): enemy hit
+        """
         channel = pygame.mixer.find_channel()
         if channel:
             channel.play(self.hit_sound)
